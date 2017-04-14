@@ -22,12 +22,12 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by okunets on 13.04.2017.
  */
-public class AddClient extends BaseContainer {
-    private MkContainer thisContainer;
+public class GetClientClient extends BaseContainerTest {
+    private MkContainer getClientContainer;
     @Before
     public void setUp() throws IOException {
         this.container=this.getBasicContainer();
-        thisContainer=new MkGrizzlyContainer();
+        getClientContainer =new MkGrizzlyContainer();
 
     }
 
@@ -46,7 +46,7 @@ public class AddClient extends BaseContainer {
 
     @Test
     public void getClient() throws IOException {
-        Response authorize = authorize();
+        authorize();
         Client client=new Client(
                    1,
                    "Oleg",
@@ -54,19 +54,22 @@ public class AddClient extends BaseContainer {
                 "login",
                 "password"
            );
-        thisContainer.next(
+        getClientContainer.next(
                 new MkAnswer.Simple(HttpURLConnection.HTTP_OK)
                 .withBody(client.toString())
         );
-        thisContainer.start();
-        new JdkRequest(thisContainer.home())
+        getClientContainer.start();
+        // Sending a request
+        new JdkRequest(getClientContainer.home())
                 .through(VerboseWire.class)
                 .header("id", 1)
                 .method(POST)
                 .body().set(client.toString()).back()
                 .fetch();
 
-        MkQuery query = thisContainer.take();
+        //Retrieving the request
+        MkQuery query = getClientContainer.take();
+        //Body assertion
         MatcherAssert.assertThat(
                 query.body(),
                Matchers.equalTo(client.toString())

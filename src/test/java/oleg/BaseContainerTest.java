@@ -19,11 +19,14 @@ import static com.jcabi.http.Request.POST;
 /**
  * Created by okunets on 13.04.2017.
  */
-public class BaseContainer {
+public class BaseContainerTest {
     protected MkContainer container;
 
     public MkContainer getBasicContainer() throws IOException {
         MkContainer container = new MkGrizzlyContainer();
+        /* Here we define the container's responses. Each request is processed sequentially
+        *  with these responses.
+        */
         container.next(
                 new MkAnswer.Simple("Authentication is successful!")
                         .withStatus(HttpURLConnection.HTTP_OK)
@@ -38,13 +41,11 @@ public class BaseContainer {
 
     public Response authorize() throws IOException {
         getBasicContainer();
-//        container.start();
-        Response response = new JdkRequest(container.home())
+        return new JdkRequest(container.home())
                 .through(BasicAuthWire.class)
                 .method(POST)
                 .header("Authorization","amVmZjoxMjM0NQ==")
                 .fetch();
-        return response;
     }
 
     public Response getErrors() throws IOException {
